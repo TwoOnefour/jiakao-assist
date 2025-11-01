@@ -1,0 +1,4 @@
+requests
+sentence_transformers
+chromadb
+tqdm
