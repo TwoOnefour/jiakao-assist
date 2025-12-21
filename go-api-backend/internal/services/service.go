@@ -8,7 +8,7 @@ import (
 )
 
 type RAGService interface {
-	Search(ctx context.Context, query string, topK int) (*types.SearchResp, error)
+	SearchAndResponse(ctx context.Context, query string, topK int) (*types.ContentResp, error)
 	AnswerStream(ctx context.Context, query string, k int, f func(delta string), f2 func(stage string, msg string)) ([]types.Hit, error)
 }
 
@@ -36,7 +36,7 @@ func NewRAG(d RAGDeps) RAGService {
 	return &ragService{worker: d.Worker, topK: d.TopK, threshold: d.Threshold, deepseek: d.Deepseek}
 }
 
-func (r *ragService) Search(ctx context.Context, query string, topK int) (*types.SearchResp, error) {
+func (r *ragService) SearchAndResponse(ctx context.Context, query string, topK int) (*types.ContentResp, error) {
 	if topK <= 0 {
 		topK = r.topK
 	}
@@ -44,8 +44,35 @@ func (r *ragService) Search(ctx context.Context, query string, topK int) (*types
 	if err != nil {
 		return nil, err
 	}
+	promptStr := util.BuildPrompt(query, out.Hits)
+	var messages []clients.ChatMessage
+	messages = append(messages, clients.ChatMessage{
+		Role:    "system",
+		Content: "系统：你是驾考助手。仅依据【资料】回答；若给出资料没有，无法依据时说不知道。要求：\n1) 先给结论；2) 在答案末尾标注引用编号（如 [1][3]）；3) 不要编造资料中不存在的内容。",
+	})
+	messages = append(messages, clients.ChatMessage{
+		Role:    "user",
+		Content: promptStr,
+	})
+
+	prompt := &clients.Prompt{
+		Messages: messages,
+	}
+	res, err := r.deepseek.ChatOnce(ctx, r.deepseek.GetName(), prompt.Messages, prompt.Options)
+	if err != nil {
+		return nil, err
+	}
 	// 这里可做命中过滤/排序/阈值裁剪等业务逻辑
-	return out, nil
+	return &types.ContentResp{
+		Answer: res,
+		Source: func() []string {
+			r := make([]string, len(out.Hits))
+			for i, v := range out.Hits {
+				r[i] = v.Text
+			}
+			return r
+		}(),
+	}, nil
 }
 
 func (r *ragService) AnswerStream(

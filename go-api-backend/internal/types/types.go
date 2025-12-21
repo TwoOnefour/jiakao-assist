@@ -4,6 +4,7 @@ type SearchReq struct {
 	Query string `json:"query" binding:"required"`
 	TopK  int    `json:"topK" binding:"omitempty,min=1,max=50"`
 }
+
 type Hit struct {
 	ID       string                 `json:"id"`
 	Score    float64                `json:"score"`
@@ -19,4 +20,9 @@ type SearchResp struct {
 
 type UserReq struct {
 	Query string `json:"query"`
+}
+
+type ContentResp struct {
+	Answer string   `json:"answer"`
+	Source []string `json:"sources"`
 }

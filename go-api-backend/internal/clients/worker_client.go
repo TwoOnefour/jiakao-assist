@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -54,7 +55,8 @@ func (w *workerClient) Search(ctx context.Context, query string, topK int) (*typ
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode >= 300 {
-		return nil, fmt.Errorf("worker /search status=%d", resp.StatusCode)
+		b, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("worker /search status=%d resp=%s", resp.StatusCode, string(b))
 	}
 
 	// 包壳

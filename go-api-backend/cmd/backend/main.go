@@ -21,11 +21,11 @@ func main() {
 
 	r := gin.New()
 	r.Use(gin.Recovery())
-	h := transport.New(rag)
-	wsH := transport.NewWS(rag)
-	r.GET("/ws/answer", wsH.Answer)
-	r.POST("/search", h.Search)
-	r.OPTIONS("/search", h.Cors)
-	http.ListenAndServe(":8080", r)
+	h := transport.New(rag, deepseek)
+	//wsH := transport.NewWS(rag)
+	//r.GET("/ws/answer", wsH.Answer)
 
+	r.POST("/generate", h.SearchAndResponse)
+	r.OPTIONS("/generate", h.Cors)
+	http.ListenAndServe(":8080", r)
 }
