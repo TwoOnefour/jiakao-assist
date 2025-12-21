@@ -25,3 +25,7 @@ type WSError struct {
 type WSDone struct {
 	Type string `json:"type"` // "done"
 }
+
+type WSPing struct {
+	Type string `json:"type"`
+}

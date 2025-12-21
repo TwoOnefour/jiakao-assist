@@ -71,7 +71,7 @@ func (r *ragService) AnswerStream(
 	}
 	if onStatus != nil {
 		if mode == "llm" {
-			onStatus("llm", "deepseek-distill")
+			onStatus("llm", "deepseek")
 		} else {
 			onStatus("fallback", "deepseek-v3")
 		}
@@ -92,14 +92,10 @@ func (r *ragService) AnswerStream(
 	prompt := &clients.Prompt{
 		Messages: messages,
 	}
-	_, err = r.deepseek.Stream(ctx, "gemini-2.5-flash", prompt.Messages, prompt.Options, onDelta)
+	_, err = r.deepseek.Stream(ctx, r.deepseek.GetName(), prompt.Messages, prompt.Options, onDelta)
 	if err != nil {
 		return nil, err
 	}
 
 	return out.Hits, nil
-}
-
-func (r *ragService) pickModel() string {
-	return "deepseek-chat"
 }

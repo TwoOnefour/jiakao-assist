@@ -19,6 +19,7 @@ import (
 type DeepSeek interface {
 	ChatOnce(ctx context.Context, model string, messages []ChatMessage, opt *ChatOptions) (string, error)
 	Stream(ctx context.Context, model string, messages []ChatMessage, opt *ChatOptions, onDelta func(string)) (string, error)
+	GetName() string
 }
 
 type ChatMessage struct {
@@ -47,14 +48,14 @@ type Prompt struct {
 /*************** Client impl ***************/
 
 type deepSeekClient struct {
-	base *url.URL
-	key  string
-	http *http.Client
-	// path 可配置（默认 /v1/chat/completions）
+	base     *url.URL
+	key      string
+	http     *http.Client
 	chatPath string
+	name     string
 }
 
-func NewDeepSeek(baseURL, apiKey string, opts ...func(*deepSeekClient)) (DeepSeek, error) {
+func NewDeepSeek(baseURL, apiKey, name, basePath string, opts ...func(*deepSeekClient)) (DeepSeek, error) {
 	if baseURL == "" {
 		baseURL = "https://api.deepseek.com"
 	}
@@ -66,20 +67,13 @@ func NewDeepSeek(baseURL, apiKey string, opts ...func(*deepSeekClient)) (DeepSee
 		base:     u,
 		key:      apiKey,
 		http:     &http.Client{Timeout: 60 * time.Second},
-		chatPath: "/chat/completions",
+		chatPath: basePath,
+		name:     name,
 	}
 	for _, f := range opts {
 		f(c)
 	}
 	return c, nil
-}
-
-// 可选：自定义路径或 http.Client
-func WithChatPath(p string) func(*deepSeekClient) {
-	return func(c *deepSeekClient) { c.chatPath = p }
-}
-func WithHTTPClient(h *http.Client) func(*deepSeekClient) {
-	return func(c *deepSeekClient) { c.http = h }
 }
 
 /*************** Non-stream ***************/
@@ -229,6 +223,10 @@ func (c *deepSeekClient) buildBody(model string, messages []ChatMessage, opt *Ch
 		headers[k] = v
 	}
 	return b, headers
+}
+
+func (c *deepSeekClient) GetName() string {
+	return c.name
 }
 
 /*************** wire types ***************/

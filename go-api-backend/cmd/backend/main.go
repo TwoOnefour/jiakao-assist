@@ -16,7 +16,7 @@ func main() {
 	}
 
 	worker, _ := clients.NewWorker(conf.Worker.BaseURL)
-	deepseek, _ := clients.NewDeepSeek(conf.DeepSeek.BaseUrl, conf.DeepSeek.APIKey)
+	deepseek, _ := clients.NewDeepSeek(conf.DeepSeek.BaseUrl, conf.DeepSeek.APIKey, conf.DeepSeek.Name, conf.DeepSeek.BasePath)
 	rag := services.NewRAG(services.RAGDeps{Worker: worker, TopK: 5, Threshold: 0.35, Deepseek: deepseek})
 
 	r := gin.New()

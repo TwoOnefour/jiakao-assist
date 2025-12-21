@@ -39,6 +39,8 @@ type DeepSeek struct {
 	ModelV3      string `toml:"model_v3"`      // deepseek-v3
 	ModelDistill string `toml:"model_distill"` // deepseek-distill
 	BaseUrl      string `toml:"base_url"`
+	Name         string `toml:"model_name"`
+	BasePath     string `toml:"base_path" default:"/v1/completion"`
 }
 
 type Redis struct {

@@ -4,7 +4,7 @@ import (
 	"go-api-backend/internal/services"
 	"net/http"
 	"time"
-	
+
 	"go-api-backend/internal/types"
 
 	"github.com/gin-gonic/gin"
@@ -57,12 +57,12 @@ func (h *WSHandler) Answer(c *gin.Context) {
 	}
 
 	// 发送状态：embedding
-	send(types.WSStatus{Type: "status", Stage: "embedding", Msg: "embed query (HF)"})
+	send(types.WSStatus{Type: "status", Stage: "hf_bge", Msg: "embed query (HF)"})
 
 	// 在 RAG 服务里做编排：embedding → search → model route
 	// AnswerStream 需要你在 services 实现：返回命中的 hits，并且在生成时按回调逐段推送
 	hits, err := h.rag.AnswerStream(c, ask.Query, ask.TopK, func(delta string) {
-		send(map[string]string{"type": "delta", "text": delta})
+		send(map[string]string{"type": "llm", "text": delta})
 	}, func(stage, msg string) {
 		// 可选：服务层回调状态（如 "search"、"llm"/"fallback"）
 		send(types.WSStatus{Type: "status", Stage: stage, Msg: msg})
