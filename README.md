@@ -16,7 +16,7 @@
 vite react 纯ai写的
 
 ### 后端
-<img width="642" height="425" alt="image" src="https://github.com/user-attachments/assets/bcc21276-4215-4d71-8913-94e5a35b57e2" />
+<img width="2816" height="1536" alt="Gemini_Generated_Image_mzx48smzx48smzx4" src="https://github.com/user-attachments/assets/d7d9a272-511e-46f5-b6bb-8e7b8e79f61c" />
 
 把llm和cloudflare拆成两个微服务解耦
 
