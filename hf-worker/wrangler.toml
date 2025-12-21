@@ -1,0 +1,12 @@
+name = "hf-embed-worker"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+[vars]
+HF_API_URL = "https://api-inference.huggingface.co/models"
+HF_MODEL_DEFAULT = "BAAI/bge-small-zh-v1.5"
+
+[[vectorize]]
+binding = "VEC"
+index_name = "ai-search-mini-rag-search-engine-jiakao-512"
+
