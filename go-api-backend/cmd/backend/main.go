@@ -1,12 +1,15 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"go-api-backend/internal/clients"
 	"go-api-backend/internal/config"
+	"go-api-backend/internal/public"
 	"go-api-backend/internal/services"
 	"go-api-backend/internal/transport"
 	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -27,5 +30,14 @@ func main() {
 
 	r.POST("/generate", h.SearchAndResponse)
 	r.OPTIONS("/generate", h.Cors)
-	http.ListenAndServe(":8080", r)
+	staticFS := public.Dist
+	fileServer := http.FileServer(http.FS(staticFS))
+	r.NoRoute(func(c *gin.Context) {
+		if !strings.HasPrefix(c.Request.URL.Path, "/generate") {
+			fileServer.ServeHTTP(c.Writer, c.Request)
+			return
+		}
+		c.JSON(404, gin.H{"code": 404, "msg": "Not Found"})
+	})
+	http.ListenAndServe(":"+conf.Server.Port, r)
 }
