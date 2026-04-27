@@ -3,8 +3,6 @@
 
 示例网页： https://assist.0rtt.de 
 
-无任何深度，~~得过且过~~，架构图见下面
-
 - python爬虫处理数据, 去重清洗生成bge向量
 - 向量存入cloudflare ai向量数据库
 - 使用bge RAG zh 处理向量转中文
