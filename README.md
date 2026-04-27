@@ -20,7 +20,6 @@
 vite react 纯ai写的
 
 ### 后端
-自行看图吧，不要问我如果访问量高了怎么办，什么是削峰和队列解耦缓存问题，这些都没有
 
 <img width="2816" height="1536" alt="Gemini_Generated_Image_mzx48smzx48smzx4" src="https://github.com/user-attachments/assets/d7d9a272-511e-46f5-b6bb-8e7b8e79f61c" />
 
